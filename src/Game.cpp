@@ -3,6 +3,8 @@
 #include <limits>
 #include <thread>
 #include <chrono>
+#include <fstream>
+#include <sstream>
 
 void clearScreen() {
 #ifdef _WIN32
@@ -78,7 +80,6 @@ void Game::createNewGame() {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
     do {
-
         totalPoints = 12;
         skill = 6, health = 12, luck = 6;
 
@@ -102,23 +103,18 @@ void Game::createNewGame() {
         if (totalPoints > 0) {
             luck += totalPoints;
             if (luck > 12) { luck = 12; }
-
             std::cout << "Os " << totalPoints << " pontos restantes foram colocados em Sorte.\n";
         }
 
         int choice;
-
         do {
             std::cout << "Distribuição de pontos correta?\n"
                       << "1. Sim\n"
                       << "2. Refazer\n";
-
             std::cin >> choice;
-
         } while (choice != 1 && choice != 2);
 
         if (choice == 1) break;
-
     } while (true);
 
     student = new Student(name, skill, health, luck);
@@ -129,12 +125,14 @@ void Game::mainLoop() {
     while (isGameRunning && student->isAlive()) {
         Scene currentScene;
 
-        if (auto scenePath = rootPath / "data" / "scenes" / (std::to_string(currentSceneId) + ".txt"); !currentScene.loadFromFile(scenePath.string())) {
+        if (auto scenePath = rootPath / "data" / "scenes" / (std::to_string(currentSceneId) + ".txt"); 
+            !currentScene.loadFromFile(scenePath.string())) {
             std::cerr << "Falha critica: O arquivo de cena nao pode ser carregado. Verifique o caminho.\n";
             break;
         }
 
-        saveGame();
+        saveGame(); // salva automaticamente a cada cena
+
         clearScreen();
         student->displayStatus();
         currentScene.display();
@@ -287,13 +285,79 @@ void Game::startCombat(Scene* scene) {
 }
 
 void Game::loadGame() {
-    clearScreen();
-    std::cout << "Carregando jogo...\n";
-    // IMPLEMENTAR LEITURA DE SAVE
+    cleanup(); 
+
+    std::ifstream saveFile(rootPath / "savegame.txt");
+    if (!saveFile.is_open()) {
+        std::cerr << "Nenhum save encontrado.\n";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        return;
+    }
+
+    std::string name;
+    std::getline(saveFile, name);
+
+    int skill, curHealth, maxHealth, curLuck, maxLuck;
+    saveFile >> skill >> curHealth >> maxHealth >> curLuck >> maxLuck;
+
+    int treasure, provisions;
+    saveFile >> treasure >> provisions;
+
+    saveFile >> currentSceneId;
+
+    
+    student = new Student(name, skill, maxHealth, maxLuck);
+    student->setCurrentHealth(curHealth);
+    student->setCurrentLuck(curLuck);
+    student->addTreasure(treasure);
+    student->addProvisions(provisions);
+
+    
+    int itemCount;
+    saveFile >> itemCount;
+    saveFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+    for (int i = 0; i < itemCount; i++) {
+        std::string itemName;
+        std::getline(saveFile, itemName);
+        student->addItem(new Item(itemName));
+    }
+
+    saveFile.close();
+
+    std::cout << "Jogo carregado com sucesso!\n";
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    mainLoop();
 }
 
 void Game::saveGame() {
-    // IMPLEMENTAR SAVE GAME
+    if (!student) return; 
+    
+    std::ofstream saveFile(rootPath / "savegame.txt");
+    if (!saveFile.is_open()) {
+        std::cerr << "Erro ao salvar o jogo.\n";
+        return;
+    }
+
+    saveFile << student->getName() << "\n";
+    saveFile << student->getSkill() << " "
+             << student->getCurrentHealth() << " "
+             << student->getMaxHealth() << " "
+             << student->getCurrentLuck() << " "
+             << student->getMaxLuck() << "\n";
+    saveFile << student->getTreasure() << " "
+             << student->getProvisions() << "\n";
+
+    saveFile << currentSceneId << "\n";
+
+    auto items = student->getInventory();
+    saveFile << items.size() << "\n";
+    for (auto* item : items) {
+        saveFile << item->getName() << "\n";
+    }
+
+    saveFile.close();
+    std::cout << "Jogo salvo com sucesso!\n";
 }
 
 void Game::showCredits() const {
@@ -309,4 +373,3 @@ void Game::showCredits() const {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();
 }
-
