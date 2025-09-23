@@ -25,7 +25,11 @@ public:
     int getMaxHealth() const;
     int getCurrentLuck() const;
 
+    void setHealth(int health);
+    void setSkill(int skill);
+    void setLuck(int luck);
+
     // Virtual method for calculate attack in child classes
-    virtual int calculateAttackForce() const = 0;
+    virtual int calculateAttackForce() const;
 
 };

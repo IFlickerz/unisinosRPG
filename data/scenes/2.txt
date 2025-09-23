@@ -1,0 +1,10 @@
+Você entra na sala e se senta no seu lugar habitual. O professor entra logo em seguida, com uma expressão séria. Sem nem mesmo dar "boa noite", ele larga uma pilha de folhas na mesa e diz: "Guardem os materiais. Prova surpresa." O pânico instala-se na turma. A folha à sua frente parece um monstro de integrais e funções.
+
+M:Prova Surpresa de Cálculo 2
+H:8
+E:12
+S:7
+T:100
+P:1
+I:Caneta da Sorte;c;0;0;0
+5:6

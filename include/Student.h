@@ -12,15 +12,14 @@ public:
     // Constructor
     Student(std::string name, int skill, int health, int luck);
 
-    // Destructor
-    ~Student(); // Inventory cleanup
-
-    // Override base class virtual method
-    int calculateAttackForce() const override;
+    // Destructor - Inventory cleanup
+    ~Student();
 
     // Methods
-    bool testLuck();
+    bool testAndUseLuck();
     void useProvision();
     void addItem(Item* item);
-    void displayInventory() const;
+    void addProvisions(int amount);
+    void addTreasure(int amount);
+    void displayStatus() const;
 };

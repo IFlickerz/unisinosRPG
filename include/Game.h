@@ -1,27 +1,30 @@
 #pragma once
 #include "Student.h"
 #include "Scene.h"
-#include <vector>
+#include <filesystem>
 
 class Game {
 private:
     Student* student;
-    Scene* currentScene;
-    std::vector<int> visitedScenes;
+    int currentSceneId;
     bool isGameRunning;
+    std::filesystem::path rootPath;
 
     void mainMenu();
-    void createNewMenu();
-    void loadGame(int slot);
-    void saveGame(int slot) const;
-    void showCredits() const;
+    void createNewGame();
     void mainLoop();
-    void processChoice(int sceneId);
-    void startCombat();
+
+    void loadGame();
+    void saveGame(); // Should be called auto when a new scene loads in
+
+    void showCredits() const;
+
+    void startCombat(Scene* scene);
+    void cleanup();
 
 public:
     // Constructor
-    Game();
+    explicit Game(const std::string& exePath);
 
     // Destructor
     ~Game();

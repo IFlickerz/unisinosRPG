@@ -1,0 +1,7 @@
+É uma noite de terça-feira e você acaba de descer do Trensurb. O campus da Unisinos em São Leopoldo está movimentado. Grupos de estudantes conversam perto do portão enquanto você caminha em direção ao prédio da Escola Politécnica, sentindo o peso da mochila e das expectativas para o semestre que se inicia.
+
+O corredor do Bloco C está à sua frente.
+
+#2:Ir direto para a sala para aula de Cálculo 2.
+#3:Passar rapidamente no banheiro.
+#4:Dar uma olhada no laboratório de informatica.

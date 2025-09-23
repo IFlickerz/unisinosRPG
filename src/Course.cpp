@@ -2,12 +2,25 @@
 #include <random>
 
 Course::Course(std::string name, int skill, int health, int luck, bool allowsFleeing)
-    : Entity(name, skill, health, luck), allowsFleeing(allowsFleeing) {}
+    : Entity(std::move(name), skill, health, luck), allowsFleeing(allowsFleeing),
+        treasureDrop(0), provisionDrop(0), itemDrop(nullptr) {}
 
-int Course::calculateAttackForce() const {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(1,10);
+Course::~Course() {
+    delete itemDrop;
+}
 
-    return distrib(gen) + this->skill;
+void Course::setDrops(int treasure, int provisions, Item* item) {
+    this->treasureDrop = treasure;
+    this->provisionDrop = provisions;
+    this->itemDrop = item;
+}
+
+int Course::getTreasureDrop() const { return this->treasureDrop; }
+int Course::getProvisionDrop() const { return this->provisionDrop; }
+
+// Transfer items (course -> student)
+Item* Course::getItemDrop() {
+    Item* to_return = itemDrop;
+    itemDrop = nullptr;
+    return to_return;
 }

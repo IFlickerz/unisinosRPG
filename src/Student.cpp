@@ -3,7 +3,7 @@
 #include <random>
 
 Student::Student(std::string name, int skill, int health, int luck)
-    : Entity(name, skill, health, luck), treasure(0), provisions(2) {}
+    : Entity(std::move(name), skill, health, luck), treasure(0), provisions(2) {}
 
 Student::~Student() {
     for (Item* item : inventory) {
@@ -12,12 +12,17 @@ Student::~Student() {
     inventory.clear();
 }
 
-int Student::calculateAttackForce() const {
+bool Student::testAndUseLuck() {
+    if (currentLuck <= 0) return false;
+
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(1,10);
+    std::uniform_int_distribution<> distrib(1,6);
 
-    return distrib(gen) + this->skill;
+    bool success = (distrib(gen) + distrib(gen)) <= currentLuck;
+    currentLuck--;
+
+    return success;
 }
 
 void Student::useProvision() {
@@ -30,9 +35,35 @@ void Student::useProvision() {
 
         this->provisions--;
         std::cout << "Você tomou um café e recuperou 4 pontos mentais de vida" << std::endl;
+    } else {
+        std::cout << "Você está sem nenhum café" << std::endl;
     }
 }
 
-// !!!!
-// Implementar ainda os métodos de testLuck, addItem e displayInventory
-// !!!!
+void Student::addItem(Item* item) {
+    if (item) {
+        inventory.push_back(item);
+    }
+}
+
+void Student::addProvisions(int amount) { this->provisions += amount; }
+void Student::addTreasure(int amount) { this->treasure += amount; }
+
+void Student::displayStatus() const {
+    std::cout << "--- Status de " << name << " ---\n"
+              << "  Saúde Mental: " << currentHealth << " / " << maxHealth << "\n"
+              << "  Habilidade: " << skill << "\n"
+              << "  Sorte: " << currentLuck << " / " << maxLuck << "\n"
+              << "  Cafés: " << provisions << "\n"
+              << "  Tesouro: " << treasure << "\n"
+              << "  Inventário: ";
+    if (inventory.empty()) {
+        std::cout << "Vazio\n";
+    } else {
+        for (size_t i = 0; i < inventory.size(); i++) {
+            std::cout << inventory[i]->getName() << (i == inventory.size() - 1 ? "" : ", ");
+        }
+        std::cout << "\n";
+    }
+    std::cout << "------------------------\n\n";
+}

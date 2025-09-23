@@ -18,6 +18,7 @@ private:
     Course* enemyInScene;
     int nextSceneOnVictory;
     int nextSceneOnDefeat;
+    bool isFinalScene;
 
 public:
     // Constructor
@@ -27,8 +28,13 @@ public:
     ~Scene();
 
     bool loadFromFile(const std::string& filePath);
+    void display() const;
 
-    std::string getText() const;
+    Course* getEnemy();
+    Item* takeItem();
+    bool hasChoices() const;
+    bool isCombatScene() const;
+    bool isEnd() const;
+    int getNextScene(bool victory) const;
     const std::map<int, Choice>& getChoices() const;
-    Course* getEnemy() const;
 };

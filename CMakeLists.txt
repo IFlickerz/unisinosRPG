@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 4.0)
 project(unisinosRPG)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(include)
 
@@ -26,3 +27,7 @@ add_executable(unisinosRPG
         src/Student.cpp
         main.cpp
         README.md)
+
+target_include_directories(unisinosRPG PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries(unisinosRPG PRIVATE stdc++fs)
